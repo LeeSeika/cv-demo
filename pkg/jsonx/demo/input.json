@@ -1,0 +1,14 @@
+{
+  "fruits": [
+    {
+      "type": "apple",
+      "color": "red",
+      "peeled": false
+    },
+    {
+      "type": "watermelon",
+      "sliced": true,
+      "has_seeds": true
+    }
+  ]
+}
