@@ -186,6 +186,23 @@ res 字段打上了 `json:"-"` 标签，不参与序列化和反序列化过程�
 通过这种方式，我们在 Go 中实现了类似于 Rust Serde 中 serde_json::Value 的动态 JSON 处理能力，同时也保留了“延迟解析”的特性。
 
 ``` go
+var inputJSON []byte = []byte(`
+{
+    "fruits": [
+        {
+            "type": "apple",
+            "color": "red",
+            "peeled": false
+        },
+        {
+            "type": "watermelon",
+            "sliced": true,
+            "has_seeds": false
+        }
+    ]
+}
+`)
+
 type Basket struct {
 	Fruits []jsonx.JSONValue `json:"fruits"`
 }
