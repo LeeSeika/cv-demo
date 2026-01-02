@@ -3,10 +3,9 @@ package component
 import (
 	"fmt"
 
-	"github.com/leeseika/cv-demo/pkg/jsonx"
+	jsonmodel "github.com/leeseika/cv-demo/pkg/model/json"
 	"github.com/leeseika/cv-demo/pkg/page/material/component/blocks"
 	"github.com/leeseika/cv-demo/pkg/page/material/component/element"
-	"github.com/leeseika/cv-demo/pkg/page/material/component/element/field"
 	"github.com/leeseika/cv-demo/pkg/page/tools/locale"
 )
 
@@ -17,19 +16,13 @@ type Schema struct {
 	Elements  []element.Element `json:"elements"`
 }
 
-type RawSchema struct {
-	Name      field.TranslatableField `json:"name"`
-	MaxBlocks *uint8                  `json:"max_blocks,omitempty"`
-	Blocks    []blocks.RawSchema      `json:"blocks,omitempty"`
-	Elements  []jsonx.JSONValue       `json:"elements"`
-}
-
-func (rs *RawSchema) Parse(
+func Parse(
+	raw jsonmodel.ComponentSchema,
 	locale string,
 	localeProvider locale.LocaleProvider,
 ) (*Schema, error) {
-	elements := make([]element.Element, 0, len(rs.Elements))
-	for _, rawEle := range rs.Elements {
+	elements := make([]element.Element, 0, len(raw.Elements))
+	for _, rawEle := range raw.Elements {
 		ele, err := element.UnmarshalElement(rawEle)
 		if err != nil {
 			return nil, fmt.Errorf("failed to unmarshal element: %w", err)
@@ -42,19 +35,19 @@ func (rs *RawSchema) Parse(
 			return nil, fmt.Errorf("element %s(%s) validation failed: %w", ele.GetID(), ele.EleType(), err)
 		}
 	}
-	blocks := make([]blocks.Schema, 0, len(rs.Blocks))
-	for _, rawBlock := range rs.Blocks {
-		block, err := rawBlock.Parse(locale, localeProvider)
+	blockSchemas := make([]blocks.Schema, 0, len(raw.Blocks))
+	for _, rawBlock := range raw.Blocks {
+		block, err := blocks.Parse(rawBlock, locale, localeProvider)
 		if err != nil {
 			return nil, fmt.Errorf("failed to parse block schema: %w", err)
 		}
-		blocks = append(blocks, *block)
+		blockSchemas = append(blockSchemas, *block)
 	}
-	rs.Name.SetLocale(locale, localeProvider)
+	raw.Name.SetLocale(locale, localeProvider)
 	return &Schema{
-		Name:      rs.Name.String(),
-		MaxBlocks: rs.MaxBlocks,
-		Blocks:    blocks,
+		Name:      raw.Name.String(),
+		MaxBlocks: raw.MaxBlocks,
+		Blocks:    blockSchemas,
 		Elements:  elements,
 	}, nil
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 
+	"github.com/leeseika/cv-demo/pkg/model/object"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
@@ -18,16 +19,16 @@ func NewTaskService(db *gorm.DB) *TaskService {
 	return &TaskService{db: db}
 }
 
-func (s *TaskService) GrabTask(ctx context.Context, workerID int) (*Task, error) {
+func (s *TaskService) GrabTask(ctx context.Context, workerID int) (*object.Task, error) {
 	db := s.db.WithContext(ctx)
 
-	grabbedTask := Task{
+	grabbedTask := object.Task{
 		WorkerID: workerID,
-		Status:   TaskStatusRunning,
+		Status:   object.TaskStatusRunning,
 	}
 
-	subQuery := db.Model(&Task{}).
-		Where("status = ? AND worker_id = ?", TaskStatusPending, 0).
+	subQuery := db.Model(&object.Task{}).
+		Where("status = ? AND worker_id = ?", object.TaskStatusPending, 0).
 		Limit(1).
 		Select("id")
 

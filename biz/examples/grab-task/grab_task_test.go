@@ -8,6 +8,7 @@ import (
 	"sync"
 	"testing"
 
+	"github.com/leeseika/cv-demo/pkg/model/object"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -20,7 +21,7 @@ func TestGrabTask(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to open database: %v", err)
 	}
-	if err := db.AutoMigrate(&Task{}); err != nil {
+	if err := db.AutoMigrate(&object.Task{}); err != nil {
 		t.Fatalf("failed to migrate database: %v", err)
 	}
 	if err := seedTasks(db); err != nil {
@@ -76,10 +77,10 @@ func TestGrabTask(t *testing.T) {
 
 // seedTasks seeds the database with initial tasks for testing.
 func seedTasks(db *gorm.DB) error {
-	tasks := make([]*Task, 0, 100)
+	tasks := make([]*object.Task, 0, 100)
 	for range 100 {
-		tasks = append(tasks, &Task{
-			Status:   TaskStatusPending,
+		tasks = append(tasks, &object.Task{
+			Status:   object.TaskStatusPending,
 			WorkerID: 0,
 		})
 	}

@@ -3,6 +3,7 @@ package preprocessor
 import (
 	"encoding/json"
 
+	jsonmodel "github.com/leeseika/cv-demo/pkg/model/json"
 	"github.com/leeseika/cv-demo/pkg/page/material/component"
 	"github.com/leeseika/cv-demo/pkg/page/material/template"
 	componentschema "github.com/leeseika/cv-demo/pkg/page/tools/component-schema"
@@ -14,11 +15,11 @@ func PreprocessComponent(
 	locale string,
 	localeProvider locale.LocaleProvider,
 ) (*component.Schema, error) {
-	var rawComponentSchema component.RawSchema
+	var rawComponentSchema jsonmodel.ComponentSchema
 	if err := json.Unmarshal(raw, &rawComponentSchema); err != nil {
 		return nil, err
 	}
-	componentSchema, err := rawComponentSchema.Parse(locale, localeProvider)
+	componentSchema, err := component.Parse(rawComponentSchema, locale, localeProvider)
 	if err != nil {
 		return nil, err
 	}
