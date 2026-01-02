@@ -37,6 +37,7 @@ func TestGrabTask(t *testing.T) {
 		taskSet = make(map[int]struct{})
 	)
 
+	// define biz logic for each worker
 	workerFunc := func(ctx context.Context, svc *TaskService, workerID int) {
 		defer wg.Done()
 		for {
@@ -60,6 +61,7 @@ func TestGrabTask(t *testing.T) {
 		}
 	}
 
+	// start multiple workers concurrently
 	numWorkers := 5
 	wg.Add(numWorkers)
 	for i := range numWorkers {
@@ -72,6 +74,7 @@ func TestGrabTask(t *testing.T) {
 	}
 }
 
+// seedTasks seeds the database with initial tasks for testing.
 func seedTasks(db *gorm.DB) error {
 	tasks := make([]*Task, 0, 100)
 	for range 100 {
