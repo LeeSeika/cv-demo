@@ -1,0 +1,114 @@
+{
+  "components": {
+    "product_description": {
+      "blocks": {
+        "description": {
+          "name": "产品描述",
+          "elements": {
+            "description_content": {
+              "label": "描述"
+            },
+            "description_size": {
+              "label": "大小",
+              "options__1": {
+                "label": "大号"
+              },
+              "options__2": {
+                "label": "中号"
+              },
+              "options__3": {
+                "label": "小号"
+              }
+            },
+            "description_line_height": {
+              "label": "行高"
+            }
+          }
+        }
+      },
+      "elements": {
+        "padding_top": {
+          "label": "上内边距"
+        },
+        "padding_bottom": {
+          "label": "下内边距"
+        }
+      }
+    },
+    "product_title": {
+      "blocks": {
+        "title": {
+          "name": "产品标题",
+          "elements": {
+            "title_text": {
+              "label": "标题"
+            },
+            "title_size": {
+              "label": "大小",
+              "options__1": {
+                "label": "大号"
+              },
+              "options__2": {
+                "label": "中号"
+              },
+              "options__3": {
+                "label": "小号"
+              }
+            }
+          }
+        },
+        "sub_title": {
+          "name": "副标题",
+          "elements": {
+            "sub_title_text": {
+              "label": "副标题文本"
+            },
+            "sub_title_opacity": {
+              "label": "副标题不透明度"
+            }
+          }
+        }
+      },
+      "elements": {
+        "padding_top": {
+          "label": "上内边距"
+        },
+        "padding_bottom": {
+          "label": "下内边距"
+        }
+      }
+    }
+  },
+  "template": {
+    "product_page": {
+      "comp_product_title": {
+        "blocks": {
+          "blc_title": {
+            "elements": {
+              "title_text": "iPhone 13 Pro Max"
+            }
+          },
+          "blc_sub_title": {
+            "elements": {
+              "sub_title_text": "终极 iPhone 体验。"
+            }
+          }
+        }
+      },
+      "comp_product_description": {
+        "blocks": {
+          "blc_description": {
+            "elements": {
+              "description_content": "iPhone 13 Pro Max 配备了令人惊叹的 Super Retina XDR 显示屏、A15 仿生芯片和先进的摄像系统，将您的摄影提升到一个新的水平。"
+            }
+          },
+          "blc_extra_description": {
+            "elements": {
+              "description_content": "凭借其耐用的设计、全天候电池寿命和 5G 连接，iPhone 13 Pro Max 旨在满足您繁忙的生活方式。"
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -72,6 +72,7 @@ func NewBool(bo bool) *JSONValue {
 /*
 export wrapped methods to access gjson.Result
 */
+
 func (jv *JSONValue) IsNumber() bool {
 	return jv.Result().Type == gjson.Number
 }
@@ -100,7 +101,7 @@ func (jv *JSONValue) Bool() bool {
 	return jv.Result().Bool()
 }
 
-func (jv *JSONValue) String() string {
+func (jv JSONValue) String() string {
 	return jv.Result().String()
 }
 

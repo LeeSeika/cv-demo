@@ -1,0 +1,62 @@
+{
+  "name": "product_page",
+  "components": {
+    "comp_product_title": {
+      "id": "comp_product_title",
+      "name": "product_title",
+      "element_settings": {
+        "padding_top": 36,
+        "padding_bottom": 36
+      },
+      "block_order": ["blc_title", "blc_sub_title"],
+      "blocks": {
+        "blc_title": {
+          "id": "blc_title",
+          "type": "title",
+          "element_settings": {
+            "title_text": "{{ t:template.product_page.comp_product_title.blocks.blc_title.elements.title_text }}",
+            "title_size": "h1"
+          }
+        },
+        "blc_sub_title": {
+          "id": "blc_sub_title",
+          "type": "sub_title",
+          "element_settings": {
+            "sub_title_text": "{{ t:template.product_page.comp_product_title.blocks.blc_sub_title.elements.sub_title_text }}",
+            "sub_title_opacity": 100
+          }
+        }
+      }
+    },
+    "comp_product_description": {
+      "id": "comp_product_description",
+      "name": "product_description",
+      "element_settings": {
+        "padding_top": 50,
+        "padding_bottom": 50
+      },
+      "block_order": ["blc_description", "blc_extra_description"],
+      "blocks": {
+        "blc_description": {
+          "id": "blc_description",
+          "type": "description",
+          "element_settings": {
+            "description_content": "{{ t:template.product_page.comp_product_description.blocks.blc_description.elements.description_content }}",
+            "description_size": "h1",
+            "description_line_height": 28
+          }
+        },
+        "blc_extra_description": {
+          "id": "blc_extra_description",
+          "type": "description",
+          "element_settings": {
+            "description_content": "{{ t:template.product_page.comp_product_description.blocks.blc_extra_description.elements.description_content }}",
+            "description_size": "h2",
+            "description_line_height": 20
+          }
+        }
+      }
+    }
+  },
+  "order": ["comp_product_title", "comp_product_description"]
+}

@@ -1,0 +1,66 @@
+{
+  "name": "product_description",
+  "blocks": [
+    {
+      "type": "description",
+      "name": "t:components.product_description.blocks.description.name",
+      "elements": [
+        {
+          "type": "text",
+          "id": "description_content",
+          "default": "Product description",
+          "label": "t:components.product_description.blocks.description.elements.description_content.label"
+        },
+        {
+          "type": "select",
+          "id": "description_size",
+          "options": [
+            {
+              "value": "h2",
+              "label": "t:components.product_description.blocks.description.elements.description_size.options__1.label"
+            },
+            {
+              "value": "h1",
+              "label": "t:components.product_description.blocks.description.elements.description_size.options__2.label"
+            },
+            {
+              "value": "h0",
+              "label": "t:components.product_description.blocks.description.elements.description_size.options__3.label"
+            }
+          ],
+          "default": "h1",
+          "label": "t:components.product_description.blocks.description.elements.description_size.label"
+        },
+        {
+          "type": "range",
+          "id": "description_line_height",
+          "min": 10,
+          "max": 100,
+          "unit": "px",
+          "label": "t:components.product_description.blocks.description.elements.description_line_height.label",
+          "default": 24
+        }
+      ]
+    }
+  ],
+  "elements": [
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "unit": "px",
+      "label": "t:components.product_description.elements.padding_top.label",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "unit": "px",
+      "label": "t:components.product_description.elements.padding_bottom.label",
+      "default": 36
+    }
+  ]
+}

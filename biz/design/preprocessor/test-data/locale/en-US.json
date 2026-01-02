@@ -1,0 +1,114 @@
+{
+  "components": {
+    "product_description": {
+      "blocks": {
+        "description": {
+          "name": "product description",
+          "elements": {
+            "description_content": {
+              "label": "Description"
+            },
+            "description_size": {
+              "label": "Size",
+              "options__1": {
+                "label": "Large"
+              },
+              "options__2": {
+                "label": "Medium"
+              },
+              "options__3": {
+                "label": "Small"
+              }
+            },
+            "description_line_height": {
+              "label": "Line Height"
+            }
+          }
+        }
+      },
+      "elements": {
+        "padding_top": {
+          "label": "Padding Top"
+        },
+        "padding_bottom": {
+          "label": "Padding Bottom"
+        }
+      }
+    },
+    "product_title": {
+      "blocks": {
+        "title": {
+          "name": "product title",
+          "elements": {
+            "title_text": {
+              "label": "Title"
+            },
+            "title_size": {
+              "label": "Size",
+              "options__1": {
+                "label": "Large"
+              },
+              "options__2": {
+                "label": "Medium"
+              },
+              "options__3": {
+                "label": "Small"
+              }
+            }
+          }
+        },
+        "sub_title": {
+          "name": "product sub title",
+          "elements": {
+            "sub_title_text": {
+              "label": "Sub Title"
+            },
+            "sub_title_opacity": {
+              "label": "Opacity"
+            }
+          }
+        }
+      },
+      "elements": {
+        "padding_top": {
+          "label": "Padding Top"
+        },
+        "padding_bottom": {
+          "label": "Padding Bottom"
+        }
+      }
+    }
+  },
+  "template": {
+    "product_page": {
+      "comp_product_title": {
+        "blocks": {
+          "blc_title": {
+            "elements": {
+              "title_text": "iPhone 13 Pro Max"
+            }
+          },
+          "blc_sub_title": {
+            "elements": {
+              "sub_title_text": "The ultimate iPhone experience."
+            }
+          }
+        }
+      },
+      "comp_product_description": {
+        "blocks": {
+          "blc_description": {
+            "elements": {
+              "description_content": "The iPhone 13 Pro Max features a stunning Super Retina XDR display, A15 Bionic chip, and an advanced camera system that takes your photography to the next level."
+            }
+          },
+          "blc_extra_description": {
+            "elements": {
+              "description_content": "With its durable design, all-day battery life, and 5G connectivity, the iPhone 13 Pro Max is built to keep up with your busy lifestyle."
+            }
+          }
+        }
+      }
+    }
+  }
+}
