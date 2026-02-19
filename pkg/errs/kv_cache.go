@@ -9,39 +9,39 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-func IsKVError(err error, kvError error) bool {
-	if errors.Is(err, kvError) {
+func IsKVCacheError(err error, kvCacheError error) bool {
+	if errors.Is(err, kvCacheError) {
 		return true
 	}
 
 	switch driver.GetKVCacheProvider().ProviderType() {
 	case "redis":
-		return handleRedisError(err, kvError)
+		return handleRedisError(err, kvCacheError)
 	case "memcached":
-		return handleMemcachedError(err, kvError)
+		return handleMemcachedError(err, kvCacheError)
 	}
 
 	return false
 }
 
-func handleRedisError(err error, kvError error) bool {
-	switch kvError {
+func handleRedisError(err error, kvCacheError error) bool {
+	switch kvCacheError {
 	case kvcache.ErrKeyNotFound:
 		return errors.Is(err, kvcache.ErrKeyNotFound)
 	case kvcache.ErrKeyCacheMissed:
 		return errors.Is(err, redis.Nil)
 	}
 
-	return errors.Is(err, kvError)
+	return errors.Is(err, kvCacheError)
 }
 
-func handleMemcachedError(err error, kvError error) bool {
-	switch kvError {
+func handleMemcachedError(err error, kvCacheError error) bool {
+	switch kvCacheError {
 	case kvcache.ErrKeyNotFound:
 		return errors.Is(err, kvcache.ErrKeyNotFound)
 	case kvcache.ErrKeyCacheMissed:
 		return errors.Is(err, memcache.ErrCacheMiss)
 	}
 
-	return errors.Is(err, kvError)
+	return errors.Is(err, kvCacheError)
 }

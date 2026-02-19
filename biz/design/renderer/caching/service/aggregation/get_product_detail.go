@@ -21,12 +21,12 @@ func (a *aggregation) GetProductDetail(ctx context.Context, productID string) (*
 		return productDetail, nil
 	}
 
-	if errs.IsKVError(err, kvcache.ErrKeyNotFound) {
+	if errs.IsKVCacheError(err, kvcache.ErrKeyNotFound) {
 		log.Warn().Err(err).Msg("empty value placeholder hit for product detail")
 		return nil, err
 	}
 	// log the error if it's not a cache miss
-	if !errs.IsKVError(err, kvcache.ErrKeyCacheMissed) {
+	if !errs.IsKVCacheError(err, kvcache.ErrKeyCacheMissed) {
 		log.Err(err).Msg("failed to get product detail from id")
 	}
 

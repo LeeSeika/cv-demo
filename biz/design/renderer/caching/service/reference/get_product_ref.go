@@ -16,7 +16,7 @@ func (r *reference) GetProductRef(ctx context.Context, productID string) (*cache
 	}
 
 	// log error if it's not cache miss error
-	if !errs.IsKVError(err, kvcache.ErrKeyCacheMissed) {
+	if !errs.IsKVCacheError(err, kvcache.ErrKeyCacheMissed) {
 		log.Err(err).Msg("failed to get product reference cache")
 	}
 

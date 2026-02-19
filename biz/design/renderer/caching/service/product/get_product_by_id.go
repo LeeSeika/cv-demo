@@ -15,7 +15,7 @@ func (p *product) GetProductByID(ctx context.Context, productID string) (*cache.
 	if err == nil {
 		return productCache, nil
 	}
-	if errs.IsKVError(err, kvcache.ErrKeyNotFound) {
+	if errs.IsKVCacheError(err, kvcache.ErrKeyNotFound) {
 		return nil, err
 	}
 
