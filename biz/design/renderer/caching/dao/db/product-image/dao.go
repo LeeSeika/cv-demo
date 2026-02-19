@@ -29,3 +29,7 @@ func Init(db *gorm.DB) ProductImage {
 	})
 	return p
 }
+
+func Get() ProductImage {
+	return p
+}

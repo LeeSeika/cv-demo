@@ -9,7 +9,6 @@ import (
 
 type ProductVariant struct {
 	ID              string `gorm:"primarykey;autoIncrement"`
-	Name            string `gorm:"size:100;not null"`
 	Price           int    `gorm:"default:0;not null"`
 	SKU             string `gorm:"size:100"`
 	Title           string `gorm:"size:255;not null"`

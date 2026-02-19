@@ -14,6 +14,7 @@ var _initProductVariantOnce sync.Once
 type (
 	ProductVariant interface {
 		GetByIDs(ctx context.Context, productVariantIDs []string) ([]*object.ProductVariant, error)
+		GetVariantIDsByProductID(ctx context.Context, productID string) ([]string, error)
 	}
 
 	productVariant struct {

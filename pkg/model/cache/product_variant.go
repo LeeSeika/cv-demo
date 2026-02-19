@@ -29,3 +29,18 @@ func ProductVariantFromObject(variantObj *object.ProductVariant) *ProductVariant
 		ProductID:       variantObj.ProductID,
 	}
 }
+
+type ProductVariantReference struct {
+	ID       string   `json:"id"`
+	ImageIDs []string `json:"image_ids"`
+}
+
+func BuildProductVariantReference(
+	id string,
+	imageIDs []string,
+) *ProductVariantReference {
+	return &ProductVariantReference{
+		ID:       id,
+		ImageIDs: imageIDs,
+	}
+}

@@ -28,3 +28,21 @@ func ProductFromObject(productObj *object.Product) *Product {
 		CreatedAt:   productObj.CreatedAt,
 	}
 }
+
+type ProductReference struct {
+	ID         string   `json:"id"`
+	ImageIDs   []string `json:"image_ids"`
+	VariantIDs []string `json:"variant_ids"`
+}
+
+func BuildProductReference(
+	id string,
+	imageIDs []string,
+	variantIDs []string,
+) *ProductReference {
+	return &ProductReference{
+		ID:         id,
+		ImageIDs:   imageIDs,
+		VariantIDs: variantIDs,
+	}
+}
