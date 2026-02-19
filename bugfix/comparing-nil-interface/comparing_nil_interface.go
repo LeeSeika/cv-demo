@@ -46,7 +46,7 @@ func ObjectToModel(object any) any {
 }
 
 func ObjectToModel_Fixed(object any) any {
-	if reflect.TypeOf(object).Kind() == reflect.Ptr && reflect.ValueOf(object).IsNil() {
+	if reflect.TypeOf(object).Kind() == reflect.Pointer && reflect.ValueOf(object).IsNil() {
 		return nil
 	}
 
