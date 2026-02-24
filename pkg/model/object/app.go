@@ -12,6 +12,7 @@ type App struct {
 	Secret          string `gorm:"size:64;not null"`
 	InstallationURL string `gorm:"size:512"`
 	RedirectURL     string `gorm:"size:512"`
+	HomePageURL     string `gorm:"size:512"`
 
 	CreatedAt time.Time
 	UpdatedAt time.Time
