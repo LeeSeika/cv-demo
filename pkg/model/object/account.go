@@ -3,9 +3,10 @@ package object
 import "time"
 
 type Account struct {
-	ID        string `gorm:"size:128;primarykey"`
-	Email     string `gorm:"size:320;uniqueIndex"`
-	Password  string `gorm:"size:256;not null"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ID         string `gorm:"size:128;primarykey"`
+	Email      string `gorm:"size:320;uniqueIndex"`
+	Password   string `gorm:"size:256;not null"`
+	TOTPSecret string `gorm:"size:512;not null"`
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
 }
