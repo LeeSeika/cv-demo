@@ -7,6 +7,7 @@ import (
 	shopCacheDAO "github.com/leeseika/cv-demo/biz/design/renderer/caching/dao/cache/shop"
 	shopDAO "github.com/leeseika/cv-demo/biz/design/renderer/caching/dao/db/shop"
 	"github.com/leeseika/cv-demo/pkg/model/cache"
+	"golang.org/x/sync/singleflight"
 )
 
 var _shop *shop
@@ -19,6 +20,7 @@ type (
 	shop struct {
 		shopDAO      shopDAO.Shop
 		shopCacheDAO shopCacheDAO.Shop
+		singleFlightGroup singleflight.Group
 	}
 )
 

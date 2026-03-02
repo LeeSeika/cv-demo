@@ -8,6 +8,7 @@ import (
 	productDAO "github.com/leeseika/cv-demo/biz/design/renderer/caching/dao/db/product"
 	productvariantDAO "github.com/leeseika/cv-demo/biz/design/renderer/caching/dao/db/product-variant"
 	"github.com/leeseika/cv-demo/pkg/model/cache"
+	"golang.org/x/sync/singleflight"
 )
 
 var _product Product
@@ -23,6 +24,7 @@ type (
 		productVariantDAO      productvariantDAO.ProductVariant
 		productCacheDAO        productCacheDAO.Product
 		productVariantCacheDAO productvariantCacheDAO.ProductVariant
+		singleFlightGroup      singleflight.Group
 	}
 )
 

@@ -5,6 +5,7 @@ import (
 
 	aggregationCacheDAO "github.com/leeseika/cv-demo/biz/design/renderer/caching/dao/cache/aggregation"
 	"github.com/leeseika/cv-demo/pkg/model/dto"
+	"golang.org/x/sync/singleflight"
 )
 
 var _aggregation Aggregation
@@ -16,6 +17,7 @@ type (
 
 	aggregation struct {
 		aggregationCacheDAO aggregationCacheDAO.Aggregation
+		singleFlightGroup   singleflight.Group
 	}
 )
 
