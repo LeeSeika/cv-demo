@@ -238,21 +238,41 @@ func (a *s3Client) DetectContentType(filename string, content []byte) string {
 }
 
 func (a *s3Client) Download(ctx context.Context, file io.Writer, fileKey string) error {
-	return errors.New("not implemented")
-}
+	if len(fileKey) == 0 {
+		return errors.New("file key is required")
+	}
 
-func (a *s3Client) GeneratePresignedURL(ctx context.Context, fileKey string, expireDuration time.Duration) (string, error) {
+	resp, err := a.client.GetObject(ctx, &s3.GetObjectInput{
+		Bucket: aws.String(a.bucket),
+		Key:    aws.String(fileKey),
+	})
+	if err != nil {
+		return fmt.Errorf("failed to get object %s: %w", fileKey, err)
+	}
+	defer resp.Body.Close()
+
+	if _, err := io.Copy(file, resp.Body); err != nil {
+		return fmt.Errorf("failed to copy object content for %s: %w", fileKey, err)
+	}
+
+	return nil
+}
+func (a *s3Client) GeneratePresignedUploadURL(ctx context.Context, fileKey string, contentType string, expireDuration time.Duration) (string, error) {
 	if len(fileKey) == 0 {
 		return "", errors.New("file key is required")
+	}
+	if len(contentType) == 0 {
+		return "", errors.New("content type is required")
 	}
 	if expireDuration <= 0 {
 		return "", errors.New("expire duration must be greater than 0")
 	}
 
 	presignClient := s3.NewPresignClient(a.client)
-	presignResult, err := presignClient.PresignGetObject(ctx, &s3.GetObjectInput{
-		Bucket: aws.String(a.bucket),
-		Key:    aws.String(fileKey),
+	presignResult, err := presignClient.PresignPutObject(ctx, &s3.PutObjectInput{
+		Bucket:      aws.String(a.bucket),
+		Key:         aws.String(fileKey),
+		ContentType: aws.String(contentType),
 	}, func(opts *s3.PresignOptions) {
 		opts.Expires = expireDuration
 	})

@@ -3,9 +3,15 @@ package config
 import "fmt"
 
 type StorageEnv struct {
-	OSSType string `env:"TYPE" envDefault:""` // Storage type
-	S3      S3Env  `envPrefix:"S3."`          // S3 configuration
-	GCS     GCSEnv `envPrefix:"GCS."`         // Google Cloud Storage configuration
+	OSSType          string           `env:"TYPE" envDefault:""`    // Storage type
+	AssetsBuilderEnv AssetsBuilderEnv `envPrefix:"ASSETS_BUILDER."` // Assets builder configuration
+	S3               S3Env            `envPrefix:"S3."`             // S3 configuration
+	GCS              GCSEnv           `envPrefix:"GCS."`            // Google Cloud Storage configuration
+}
+
+type AssetsBuilderEnv struct {
+	AssetsDomain    string `env:"ASSETS_DOMAIN" envDefault:"http://127.0.0.1:4001"`                         // Assets domain
+	AssetsURLFormat string `env:"ASSETS_URL_FORMAT" envDefault:"{{ .Domain }}/{{ .Bucket }}/{{ .Source }}"` // Assets URL format
 }
 
 func (env *StorageEnv) Check() (StorageConfig, error) {
@@ -18,6 +24,11 @@ func (env *StorageEnv) Check() (StorageConfig, error) {
 		URLScheme:       env.S3.URLScheme,
 		UsePathStyle:    env.S3.UsePathStyle,
 		Bucket:          env.S3.Bucket,
+	}
+
+	assetsBuilder := AssetsBuilderConfig{
+		AssetsDomain:    env.AssetsBuilderEnv.AssetsDomain,
+		AssetsURLFormat: env.AssetsBuilderEnv.AssetsURLFormat,
 	}
 
 	gcsCredentials := GCSCredentialsConfig{
@@ -43,9 +54,10 @@ func (env *StorageEnv) Check() (StorageConfig, error) {
 	}
 
 	storageConfig := StorageConfig{
-		OSSType: env.OSSType,
-		S3:      s3,
-		GCS:     g,
+		OSSType:             env.OSSType,
+		AssetsBuilderConfig: assetsBuilder,
+		S3:                  s3,
+		GCS:                 g,
 	}
 
 	if err := storageConfig.check(); err != nil {
@@ -56,9 +68,10 @@ func (env *StorageEnv) Check() (StorageConfig, error) {
 }
 
 type StorageConfig struct {
-	OSSType string    `json:"type"` // Cloud Storage type (either `s3` or `gcs`)
-	S3      S3Config  `json:"s3"`   // S3 configuration
-	GCS     GCSConfig `json:"gcs"`  // Google Cloud Storage configuration
+	OSSType             string              `json:"type"`           // Cloud Storage type (either `s3` or `gcs`)
+	AssetsBuilderConfig AssetsBuilderConfig `json:"assets_builder"` // Assets builder configuration
+	S3                  S3Config            `json:"s3"`             // S3 configuration
+	GCS                 GCSConfig           `json:"gcs"`            // Google Cloud Storage configuration
 }
 
 func (cfg *StorageConfig) check() error {
@@ -172,4 +185,9 @@ func (cfg *StorageConfig) check() error {
 	}
 
 	return nil
+}
+
+type AssetsBuilderConfig struct {
+	AssetsDomain    string `json:"assets_domain"`     // Assets domain
+	AssetsURLFormat string `json:"assets_url_format"` // Assets URL format
 }

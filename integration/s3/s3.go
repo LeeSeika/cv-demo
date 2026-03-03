@@ -1,9 +1,3 @@
-/*
-Copyright: 2025, Deep Codify Limited
-
-intercart
-*/
-
 package s3
 
 import (

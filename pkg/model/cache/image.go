@@ -18,6 +18,6 @@ func ImageFromObject(obj *object.Image) *Image {
 	return &Image{
 		ID:      obj.ID,
 		AltText: obj.AltText,
-		Src:     fmt.Sprintf("%s/%s/%s", storageDomain, obj.Bucket, obj.OriginalSrc),
+		Src:     fmt.Sprintf("%s/%s/%s", storageDomain, obj.Bucket, obj.FileKey),
 	}
 }

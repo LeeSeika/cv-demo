@@ -1,9 +1,3 @@
-/*
-Copyright: 2026, Deep Codify Limited
-
-intercart
-*/
-
 package main
 
 import (

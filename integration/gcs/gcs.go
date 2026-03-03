@@ -1,9 +1,3 @@
-/*
-Copyright: 2025, Deep Codify Limited
-
-intercart
-*/
-
 package gcs
 
 import (
@@ -31,7 +25,7 @@ func init() {
 	flag.BoolVar(&GCSCfg.MemoryBackend, "gcsMemory", false, "Use memory backend")
 	flag.StringVar(&GCSCfg.CertFile, "gcsCert", "", "SSL certificate path")
 	flag.StringVar(&GCSCfg.KeyFile, "gcsKey", "", "SSL private key path")
-	flag.StringVar(&GCSCfg.Bucket, "gcsBucket", "intercart", "Bucket name (default: intercart)")
+	flag.StringVar(&GCSCfg.Bucket, "gcsBucket", "cv-demo", "Bucket name (default: cv-demo)")
 }
 
 var GCSCfg GCSConfig

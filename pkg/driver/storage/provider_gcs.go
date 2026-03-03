@@ -266,9 +266,12 @@ func (g *gcsClient) Download(ctx context.Context, file io.Writer, fileKey string
 	return nil
 }
 
-func (g *gcsClient) GeneratePresignedURL(ctx context.Context, fileKey string, expireDuration time.Duration) (string, error) {
+func (g *gcsClient) GeneratePresignedUploadURL(ctx context.Context, fileKey string, contentType string, expireDuration time.Duration) (string, error) {
 	if len(fileKey) == 0 {
 		return "", errors.New("file key is required")
+	}
+	if len(contentType) == 0 {
+		return "", errors.New("content type is required")
 	}
 	if expireDuration <= 0 {
 		return "", errors.New("expire duration must be greater than 0")
@@ -280,7 +283,8 @@ func (g *gcsClient) GeneratePresignedURL(ctx context.Context, fileKey string, ex
 	url, err := storage.SignedURL(g.bucket, fileKey, &storage.SignedURLOptions{
 		GoogleAccessID: g.googleAccessID,
 		PrivateKey:     g.privateKey,
-		Method:         http.MethodGet,
+		Method:         http.MethodPut,
+		ContentType:    contentType,
 		Expires:        time.Now().Add(expireDuration),
 	})
 	if err != nil {

@@ -1,10 +1,15 @@
 package driver
 
 import (
+	"bytes"
 	"context"
+	"crypto/md5"
+	"fmt"
 	"io"
 	"mime/multipart"
+	"path"
 	"sync"
+	"text/template"
 	"time"
 
 	"github.com/leeseika/cv-demo/pkg/config"
@@ -18,9 +23,10 @@ const (
 )
 
 var (
-	storageCfg           *config.StorageConfig
-	_storageProvider     StorageProvider
-	_storageProviderOnce sync.Once
+	_storageProvider       StorageProvider
+	_storageProviderOnce   sync.Once
+	_storageURLBuilder     StorageURLBuilder
+	_storageURLBuilderOnce sync.Once
 )
 
 type (
@@ -45,9 +51,50 @@ type (
 
 		Download(ctx context.Context, file io.Writer, fileKey string) error
 
-		GeneratePresignedURL(ctx context.Context, fileKey string, expireDuration time.Duration) (string, error)
+		GeneratePresignedUploadURL(ctx context.Context, fileKey string, contentType string, expireDuration time.Duration) (string, error)
+	}
+
+	StorageURLBuilder interface {
+		// BuildURL build the public URL for the given file key
+		BuildURL(bucket string, fileKey string) string
+		BuildURLWithDefaultBucket(fileKey string) string
+		BuildFileKey(shopID string, uuid string, filename string) string
+	}
+
+	defaultStorageURLBuilder struct {
+		defaultBucket string
+		domain        string
+		template      *template.Template
 	}
 )
+
+func (d *defaultStorageURLBuilder) BuildURL(bucket string, fileKey string) string {
+	props := map[string]string{
+		"Domain": d.domain,
+		"Bucket": bucket,
+		"Source": fileKey,
+	}
+
+	var result bytes.Buffer
+	err := d.template.Execute(&result, props)
+	if err != nil {
+		return ""
+	}
+
+	return result.String()
+}
+
+func (d *defaultStorageURLBuilder) BuildURLWithDefaultBucket(fileKey string) string {
+	return d.BuildURL(d.defaultBucket, fileKey)
+}
+
+func (d *defaultStorageURLBuilder) BuildFileKey(shopID string, uuid string, filename string) string {
+	fileExt := path.Ext(filename)
+	fileID := fmt.Sprintf("%s%s", uuid, fileExt)
+	shopHash := fmt.Sprintf("%x", md5.Sum([]byte(shopID)))
+	fileKey := fmt.Sprintf("i/%s/%s/%s/%s", safeSubstr(shopHash, 0, 1), safeSubstr(shopHash, 0, 2), safeSubstr(shopHash, 0, 8), fileID)
+	return fileKey
+}
 
 // InitStorageProvider initialize storage provider.
 func InitStorageProvider(conf config.StorageConfig) {
@@ -57,12 +104,10 @@ func InitStorageProvider(conf config.StorageConfig) {
 }
 
 func initStorageProviderOnce(conf config.StorageConfig) {
-	storageCfg = &conf
-
-	switch storageCfg.OSSType {
+	switch conf.OSSType {
 	case S3Client:
 		var err error
-		s3Config := storageCfg.S3
+		s3Config := conf.S3
 		_storageProvider, err = storage.NewS3Client(s3Config)
 		if err != nil {
 			log.Fatal().Err(err).Msg("Failed to initialize s3 client")
@@ -70,16 +115,65 @@ func initStorageProviderOnce(conf config.StorageConfig) {
 		}
 	case GCSClient:
 		var err error
-		gcsConfig := storageCfg.GCS
+		gcsConfig := conf.GCS
 		_storageProvider, err = storage.NewGCSClient(gcsConfig)
 		if err != nil {
 			log.Fatal().Err(err).Msg("Failed to initialize gcs client")
 			return
 		}
 	default:
-		log.Info().Msgf("unknown oss-type: shoud be s3 or gcs ")
+		log.Info().Msgf("unknown oss-type: should be s3 or gcs ")
 		return
 	}
+	log.Info().Msgf(" %s client is initialized", conf.OSSType)
+}
 
-	log.Info().Msgf(" %s client is initialized", storageCfg.OSSType)
+func GetStorageProvider() StorageProvider {
+	return _storageProvider
+}
+
+func GetStorageURLBuilder() StorageURLBuilder {
+	return _storageURLBuilder
+}
+
+func InitStorageURLBuilder(conf config.StorageConfig) {
+	_storageURLBuilderOnce.Do(func() {
+		initStorageURLBuilderOnce(conf)
+	})
+}
+
+func initStorageURLBuilderOnce(conf config.StorageConfig) {
+	domain := conf.AssetsBuilderConfig.AssetsDomain
+	format := conf.AssetsBuilderConfig.AssetsURLFormat
+	defaultBucket := ""
+	switch conf.OSSType {
+	case S3Client:
+		defaultBucket = conf.S3.Bucket
+	case GCSClient:
+		defaultBucket = conf.GCS.Bucket
+	}
+
+	tpl, err := template.New("assets_url").Parse(format)
+	if err != nil {
+		log.Err(err).Msg("failed to parse assets URL format")
+	}
+
+	_storageURLBuilder = &defaultStorageURLBuilder{
+		defaultBucket: defaultBucket,
+		domain:        domain,
+		template:      tpl,
+	}
+}
+
+func safeSubstr(s string, start, end int) string {
+	if start > len(s) {
+		return ""
+	}
+	if end > len(s) {
+		end = len(s)
+	}
+	if start < 0 {
+		start = 0
+	}
+	return s[start:end]
 }
