@@ -247,7 +247,8 @@ package pubsub
 func(ps *productSubscriber) Start(ctx context.Context) error {
 	host := "localhost"
 	port := 8085
-	gpsTopic := "product"
+	topicName := "product"
+	deadLetterTopicName := "product-dead-letter"
 	projectID := "cv-demo"
 	subscriberID := "product-subscriber-node-1"
 
@@ -259,16 +260,26 @@ func(ps *productSubscriber) Start(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	topic, err := client.CreateTopic(ctx, gpsTopic)
+	topic, err := client.CreateTopic(ctx, topicName)
 	if err != nil {
+		return err
+	}
+	deadLetterTopicName, err := client.CreateTopic(ctx, deadLetterTopicName)
+		if err != nil {
 		return err
 	}
 	productSvc := productsvc.Get()
 
-	sub, err := client.CreateSubscription(ctx, subscriberID, gcpPubSub.SubscriptionConfig{
+	sub, err := client.CreateSubscription(ctx, p.conf.SubscriberConfig.SubscriberID, gcpPubSub.SubscriptionConfig{
 		Topic: topic,
-		// TODO: dead letter policy
-		// TODO: backoff retry policy
+		DeadLetterPolicy: &gcpPubSub.DeadLetterPolicy{
+			DeadLetterTopic:     deadLetterTopicName,
+			MaxDeliveryAttempts: 5,
+		},
+		RetryPolicy: &gcpPubSub.RetryPolicy{
+			MinimumBackoff: 3 * time.Second,
+			MaximumBackoff: 600 * time.Second,
+		},
 	})
 	if err != nil {
 		return err
@@ -284,7 +295,7 @@ func(ps *productSubscriber) Start(ctx context.Context) error {
 				} else {
 					msg.Nack()
 				}
-			}
+			}()
 
 			var event dto.Event
 			err := json.Unmarshal(msg.Data, &event)
@@ -292,26 +303,29 @@ func(ps *productSubscriber) Start(ctx context.Context) error {
 				return
 			}
 
-			if event.Action != "update" || event.Action != "delete" {
+			if event.Action != "update" && event.Action != "delete" {
 				return
 			}
 
 			p := event.Payload
-			var payload dto.ProductPayload
-			err = json.Unmarshal(p, &payload)
-			if err != nil {
-				return
+			var payload *dto.EventPayloadProduct
+			payload, ok := p.(*dto.EventPayloadProduct)
+			if !ok {
+				var payloadStruct dto.EventPayloadProduct
+				payloadStruct, ok = p.(dto.EventPayloadProduct)
+				if !ok {
+					return
+				}
+				payload = &payloadStruct
 			}
 
-			id := payload.ID
-			err = productSvc.DeleteCacheByIDs(ctx, []string{id})
+			id := payload.ProductID
+			err = ps.productSvc.DeleteCacheByIDs(ctx, []string{id})
 			if err != nil {
 				// 响应 Nack，需要重试
 				shouldAck = false
-				return err
+				return
 			}
-
-			return nil
 		})
 		if err != nil {
 			log.Err(err).Msg("failed to subscribe pub/sub message")

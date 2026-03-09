@@ -102,6 +102,21 @@ func (p *MemcachedProvider) Delete(ctx context.Context, key string) error {
 	return p.mc.Delete(key)
 }
 
+func (p *MemcachedProvider) DeleteMulti(ctx context.Context, keys []string) error {
+	if len(keys) == 0 {
+		return nil
+	}
+	var firstErr error
+	for _, key := range keys {
+		if err := p.mc.Delete(key); err != nil {
+			if firstErr == nil {
+				firstErr = err
+			}
+		}
+	}
+	return firstErr
+}
+
 func (p *MemcachedProvider) TTL(ctx context.Context, key string) (time.Duration, error) {
 	item, err := p.mc.Get(key)
 	if err != nil {

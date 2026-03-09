@@ -8,7 +8,7 @@ import (
 
 type (
 	PaymentMethod interface {
-		UpdatePaymentMethodSort(ctx context.Context, paymentProfileID string, zoneID string, methodID string, newPosition int) error
+		UpdatePaymentMethodSort(ctx context.Context, zoneID string, methodID string, newPosition int) error
 	}
 
 	paymentMethod struct {

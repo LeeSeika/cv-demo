@@ -16,6 +16,7 @@ type (
 		GetByID(ctx context.Context, productID string) (*cache.Product, error)
 		Set(ctx context.Context, productID string, product *cache.Product) error
 		SetNil(ctx context.Context, productID string) error
+		DeleteMultiByIDs(ctx context.Context, productIDs []string) error
 	}
 
 	product struct {

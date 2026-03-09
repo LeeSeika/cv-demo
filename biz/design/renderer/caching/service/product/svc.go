@@ -17,6 +17,7 @@ type (
 	Product interface {
 		GetProductByID(ctx context.Context, productID string) (*cache.Product, error)
 		GetProductVariantsByIDs(ctx context.Context, productVariantIDs []string) (map[string]*cache.ProductVariant, error)
+		DeleteCacheByIDs(ctx context.Context, productIDs []string) error
 	}
 
 	product struct {

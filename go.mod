@@ -26,6 +26,7 @@ require (
 	github.com/johannesboyne/gofakes3 v0.0.0-20260208201424-4c385a1f6a73
 	github.com/lib/pq v1.10.9
 	github.com/minio/minio-go/v7 v7.0.98
+	github.com/nats-io/nats.go v1.49.0
 	github.com/pascaldekloe/jwt v1.12.0
 	github.com/pkg/xattr v0.4.12
 	github.com/redis/go-redis/v9 v9.17.2
@@ -112,6 +113,8 @@ require (
 	github.com/minio/md5-simd v1.1.2 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421 // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
+	github.com/nats-io/nkeys v0.4.12 // indirect
+	github.com/nats-io/nuid v1.0.1 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.4 // indirect
 	github.com/philhofer/fwd v1.2.0 // indirect
 	github.com/planetscale/vtprotobuf v0.6.1-0.20240319094008-0393e58bdf10 // indirect

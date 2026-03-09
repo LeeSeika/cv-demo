@@ -86,6 +86,13 @@ func (p *RedisProvider) Delete(ctx context.Context, key string) error {
 	return p.rdb.Del(ctx, key).Err()
 }
 
+func (p *RedisProvider) DeleteMulti(ctx context.Context, keys []string) error {
+	if len(keys) == 0 {
+		return nil
+	}
+	return p.rdb.Del(ctx, keys...).Err()
+}
+
 func (p *RedisProvider) TTL(ctx context.Context, key string) (time.Duration, error) {
 	return p.rdb.TTL(ctx, key).Result()
 }

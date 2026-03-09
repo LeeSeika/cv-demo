@@ -27,12 +27,11 @@ func NewTemplateDraftSubscriber(rdb *redis.Client, templateDraftCacheDAO templat
 	}
 }
 
-func (s *templateDraftSubscriber) Start() error {
+func (s *templateDraftSubscriber) Start(ctx context.Context) error {
 	// 订阅所有以 template:draft: 开头的键的变更事件（Keyspace Notifications）
 	// 注意：Redis 需要配置 notify-keyspace-events 为 "KA" 或相关组合 (K=Keyspace events, A=All or specific like 'g' for generic commands, 'string' etc)
 	// 这里假设配置已开启。
 	// 使用 PSUBSCRIBE 模式订阅
-	ctx := context.Background()
 	pubsub := s.rdb.PSubscribe(ctx, "__keyspace@0__:template:draft:*")
 	defer pubsub.Close()
 
@@ -45,7 +44,7 @@ func (s *templateDraftSubscriber) Start() error {
 	)
 
 	var (
-		buffer []string
+		buffer = make(map[string]struct{}, batchSize)
 		timer  = time.NewTimer(flushInterval)
 	)
 
@@ -54,23 +53,15 @@ func (s *templateDraftSubscriber) Start() error {
 			return
 		}
 
-		// 去重，避免同一个key在一次batch中多次处理
-		uniqueKeys := make(map[string]struct{})
-		for _, key := range buffer {
-			uniqueKeys[key] = struct{}{}
-		}
-
-		keys := make([]string, 0, len(uniqueKeys))
-		for key := range uniqueKeys {
+		keys := make([]string, 0, len(buffer))
+		for key := range buffer {
 			keys = append(keys, key)
+			delete(buffer, key)
 		}
 
 		draftMap, err := s.templateDraftCacheDAO.GetMultiDraftsByKeys(ctx, keys)
 		if err != nil {
 			log.Err(err).Msg("failed to get multi template drafts by keys during flush")
-			// 如果批量获取失败，可能是redis出现问题，这里如果不清空buffer，可以下次重试
-			// 但考虑到buffer可能有旧数据，最好还是清或者逐个获取
-			// 简单处理：记录错误并继续，如果需要高可靠性可以引入重试机制
 		}
 
 		if len(draftMap) > 0 {
@@ -83,7 +74,6 @@ func (s *templateDraftSubscriber) Start() error {
 			}
 		}
 
-		buffer = buffer[:0]
 		timer.Reset(flushInterval)
 	}
 
@@ -98,7 +88,7 @@ func (s *templateDraftSubscriber) Start() error {
 
 			if msg.Payload == "set" {
 				key := strings.TrimPrefix(msg.Channel, "__keyspace@0__:")
-				buffer = append(buffer, key)
+				buffer[key] = struct{}{}
 				if len(buffer) >= batchSize {
 					flush() // 这里 flush 会重置 timer
 					if !timer.Stop() {
@@ -113,11 +103,15 @@ func (s *templateDraftSubscriber) Start() error {
 
 		case <-timer.C:
 			flush()
+
+		case <-ctx.Done():
+			flush()
+			return ctx.Err()
 		}
 	}
 }
 
-func (s *templateDraftSubscriber) Stop() error {
+func (s *templateDraftSubscriber) Stop(ctx context.Context) error {
 	if s.client != nil {
 		err := s.client.Close()
 		if err == redis.ErrClosed {

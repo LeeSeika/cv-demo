@@ -25,6 +25,7 @@ type (
 		SetMulti(ctx context.Context, keyValueMap map[string][]byte, expiration time.Duration) error
 		SetEmptyValuePlaceholder(ctx context.Context, key string) error
 		Delete(ctx context.Context, key string) error
+		DeleteMulti(ctx context.Context, keys []string) error
 		TTL(ctx context.Context, key string) (time.Duration, error)
 	}
 )

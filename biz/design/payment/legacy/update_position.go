@@ -7,14 +7,12 @@ import (
 	"gorm.io/gorm"
 )
 
-func (s *paymentMethod) UpdatePaymentMethodSort(ctx context.Context, paymentProfileID string, zoneID string, methodID string, newPosition int) error {
+func (s *paymentMethod) UpdatePaymentMethodSort(ctx context.Context, zoneID string, methodID string, newPosition int) error {
 	err := s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		var paymentMethod legacyobject.PaymentMethod
 		err := tx.Model(&legacyobject.PaymentMethod{}).
-			Joins("JOIN routing_zones ON routing_zones.id = payment_methods.zone_id").
 			Where("payment_methods.id = ?", methodID).
 			Where("payment_methods.zone_id = ?", zoneID).
-			Where("routing_zones.payment_profile_id = ?", paymentProfileID).
 			First(&paymentMethod).Error
 		if err != nil {
 			return err

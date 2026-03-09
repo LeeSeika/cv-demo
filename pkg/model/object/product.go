@@ -11,7 +11,7 @@ import (
 
 type Product struct {
 	ID          string `gorm:"size:128;primarykey"`
-	ShopID      string `gorm:"size:128;uniqueindex:shop_and_handle"`
+	ShopID      string `gorm:"size:128"`
 	Title       string `gorm:"size:128;index;force"`
 	Description string `gorm:"size:10240"`
 	Options     datatype.JSONSlice[*jsonmodel.ProductOption]
