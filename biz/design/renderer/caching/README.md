@@ -487,3 +487,147 @@ func (p *product) GetProductByID(ctx context.Context, productID string) (*cache.
 }
 
 ```
+
+## 3. 拓展与演进
+
+上面文档描述的缓存模型、缓存管理服务、Cache Aside、SingleFlight 等实现，默认都发生在**单体服务**内部。
+
+也就是说，在当前阶段：
+
+- 基础缓存模型管理服务、关系缓存模型管理服务、聚合缓存模型管理服务都运行在同一个 Renderer 服务进程中；
+- 服务之间的调用是进程内调用；
+- DAO、缓存访问、数据库访问都由同一个服务统一管理。
+
+这种方式在系统规模还不大时非常合适：
+
+- 工程结构清晰；
+- 本地调用开销低；
+- 调试和部署成本都比较低。
+
+但随着系统规模扩大，如果未来要演进成**多实例微服务架构**，那么当前这套分层方式其实已经天然给出了一个很适合的拆分方向。
+
+### 3.1. Aggregation Service 作为 BFF
+
+在当前设计里，聚合缓存模型管理服务本身就承担了“面向接口聚合数据”的职责。
+
+它的特点是：
+
+- 不直接依赖数据库模型 DAO；
+- 主要依赖各种基础缓存模型管理服务；
+- 负责把多个基础模型、关系模型组合成 API 真正需要的返回结果。
+
+这和典型的 **BFF（Backend For Frontend）** 非常接近。
+
+也就是说，如果未来拆分为微服务架构，那么 `Aggregation Service` 可以自然演进为 BFF 层：
+
+- 面向前端接口提供统一数据聚合能力；
+- 屏蔽底层多个缓存/领域服务的细节；
+- 根据页面或客户端需要，返回已经聚合好的 DTO 结构。
+
+例如，前端请求 `GetProductDetail` 时，BFF 不再直接操作数据库，而是通过下游服务拉取：
+
+- `Product Service`：获取 Product 基础缓存数据；
+- `Image Service`：获取 Image 基础缓存数据；
+- `Reference Service`：获取 Product 与图片、变体等关系索引；
+- 其他聚合所需服务：如 Shop、Template 等。
+
+最后由 BFF 统一拼装成 `ProductDetail` 这类聚合响应返回给前端。
+
+```mermaid
+flowchart TD
+	A[Frontend] --> B[Aggregation Service / BFF]
+	B --> C[Product Service]
+	B --> D[Image Service]
+	B --> E[Reference Service]
+	B --> F[Shop Service]
+	C --> G[Redis / DB]
+	D --> H[Redis / DB]
+	E --> I[Redis / DB]
+	F --> J[Redis / DB]
+```
+
+### 3.2. 其他 Service 的自然拆分方式
+
+相较于聚合服务，基础缓存模型管理服务和关系缓存模型管理服务更适合按领域拆分为单个微服务实例部署。
+
+原因在于它们本身的职责边界就比较明确：
+
+- `Product Service` 只关注 Product 模型的缓存构建、查询和淘汰；
+- `Image Service` 只关注 Image 模型的缓存构建、查询和淘汰；
+- `Shop Service` 只关注 Shop 模型；
+- `Reference Service` 负责维护模型之间的关联关系。
+
+这类服务拆分后，每个微服务都可以拥有自己独立的：
+
+- DAO；
+- Cache DAO；
+- 消息订阅者；
+- 数据淘汰逻辑；
+- 监控与扩容策略。
+
+从职责设计上看，这种拆分几乎是“顺着当前代码结构自然拆开”，并不需要重新发明一套新的服务边界。
+
+### 3.3. 从单体到微服务的演进关系
+
+如果把当前单体服务理解为一个“逻辑上的服务集合”，那么未来的微服务化，本质上只是把这些逻辑模块从“进程内调用”改成“网络调用”。
+
+当前单体架构可以抽象为：
+
+- `Aggregation Service`
+- `Product Service`
+- `Image Service`
+- `Shop Service`
+- `Reference Service`
+
+它们虽然都在一个进程里，但职责其实已经分层清晰。
+
+未来拆分后，则可以演进为：
+
+- `Aggregation Service` 作为 BFF 层，对接前端；
+- 各个基础模型服务作为领域微服务，对外暴露自己的查询与缓存管理能力；
+- `Reference Service` 作为关系索引服务，专门负责各种关联关系；
+- 各服务通过 RPC / HTTP / gRPC / MQ 等方式协作。
+
+```mermaid
+flowchart TD
+	subgraph MONO[当前：单体服务]
+		M1[Aggregation Service]
+		M2[Product Service]
+		M3[Image Service]
+		M4[Reference Service]
+		M5[Shop Service]
+	end
+
+	subgraph MS[未来：微服务架构]
+		S1[Aggregation Service / BFF]
+		S2[Product Microservice]
+		S3[Image Microservice]
+		S4[Reference Microservice]
+		S5[Shop Microservice]
+	end
+
+	M1 -. 演进 .-> S1
+	M2 -. 演进 .-> S2
+	M3 -. 演进 .-> S3
+	M4 -. 演进 .-> S4
+	M5 -. 演进 .-> S5
+```
+
+### 3.4. 这种演进方式的好处
+
+把 `Aggregation Service` 作为 BFF、把其他服务作为独立领域微服务，有几个明显优势：
+
+- **前后端接口稳定**：前端只依赖 BFF，不需要感知底层服务拆分细节；
+- **服务边界清晰**：聚合逻辑与领域逻辑分离；
+- **更容易横向扩容**：热点领域服务可以单独扩容；
+- **更利于团队协作**：不同领域服务可以独立演进；
+- **与当前实现兼容**：不需要推翻现有分层设计，只需要把调用方式逐步服务化。
+
+当然，这种演进也会带来新的复杂度，例如：
+
+- 进程内调用变成网络调用后，链路延迟会上升；
+- 需要处理服务发现、超时、重试、熔断等分布式问题；
+- 聚合层会面临更复杂的下游依赖管理；
+- 缓存一致性和消息投递可靠性要求会进一步提高。
+
+但从架构演进角度看，当前文档所描述的三类缓存模型与三类服务分层，本身就已经具备了向 BFF + 微服务方向平滑演进的基础。
