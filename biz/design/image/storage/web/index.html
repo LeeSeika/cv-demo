@@ -117,6 +117,21 @@
         }
       }
 
+      async function confirmUpload(shopId, imageId) {
+        const resp = await fetch(
+          "/api/images/" + encodeURIComponent(imageId) + "/confirm",
+          {
+            method: "POST",
+            headers: {
+              "X-Shop-ID": shopId,
+            },
+          },
+        );
+        const data = await resp.json();
+        if (!resp.ok) throw new Error(data.error || "confirm upload failed");
+        return data;
+      }
+
       async function fetchImages(shopId) {
         const resp = await fetch(
           "/api/images?shop_id=" + encodeURIComponent(shopId),
@@ -174,7 +189,10 @@
         try {
           setMessage("requesting preupload url...", "muted");
           const pre = await preupload(shopId, file, altText);
+          setMessage("uploading file to oss...", "muted");
           await uploadToOSS(pre.upload_url, pre.method, file);
+          setMessage("confirming upload...", "muted");
+          await confirmUpload(shopId, pre.image_id);
           setMessage("upload success", "ok");
           await refresh();
         } catch (err) {

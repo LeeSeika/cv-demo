@@ -33,7 +33,7 @@ type gcsClient struct {
 	privateKey     []byte
 }
 
-// GCS Client
+// NewGCSClient creates a Google Cloud Storage client.
 func NewGCSClient(cfg config.GCSConfig) (*gcsClient, error) {
 	gcs := gcsClient{}
 	ctx := context.Background()
@@ -264,6 +264,22 @@ func (g *gcsClient) Download(ctx context.Context, file io.Writer, fileKey string
 	}
 
 	return nil
+}
+
+func (g *gcsClient) ObjectExists(ctx context.Context, fileKey string) (bool, error) {
+	if len(fileKey) == 0 {
+		return false, errors.New("file key is required")
+	}
+
+	_, err := g.client.Bucket(g.bucket).Object(fileKey).Attrs(ctx)
+	if err == nil {
+		return true, nil
+	}
+	if errors.Is(err, storage.ErrObjectNotExist) {
+		return false, nil
+	}
+
+	return false, fmt.Errorf("get object attrs failed for %s: %w", fileKey, err)
 }
 
 func (g *gcsClient) GeneratePresignedUploadURL(ctx context.Context, fileKey string, contentType string, expireDuration time.Duration) (string, error) {

@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
+	awshttp "github.com/aws/aws-sdk-go-v2/aws/transport/http"
 	awsCfg "github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
@@ -257,6 +258,30 @@ func (a *s3Client) Download(ctx context.Context, file io.Writer, fileKey string)
 
 	return nil
 }
+
+func (a *s3Client) ObjectExists(ctx context.Context, fileKey string) (bool, error) {
+	if len(fileKey) == 0 {
+		return false, errors.New("file key is required")
+	}
+
+	_, err := a.client.HeadObject(ctx, &s3.HeadObjectInput{
+		Bucket: aws.String(a.bucket),
+		Key:    aws.String(fileKey),
+	})
+	if err == nil {
+		return true, nil
+	}
+
+	var responseErr *awshttp.ResponseError
+	if errors.As(err, &responseErr) {
+		if responseErr.HTTPStatusCode() == http.StatusNotFound {
+			return false, nil
+		}
+	}
+
+	return false, fmt.Errorf("head object failed for %s: %w", fileKey, err)
+}
+
 func (a *s3Client) GeneratePresignedUploadURL(ctx context.Context, fileKey string, contentType string, expireDuration time.Duration) (string, error) {
 	if len(fileKey) == 0 {
 		return "", errors.New("file key is required")

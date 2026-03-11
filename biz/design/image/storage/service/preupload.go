@@ -13,26 +13,26 @@ import (
 
 const defaultPreuploadExpireDuration = 15 * time.Minute
 
-func (i *image) Preupload(ctx context.Context, shopID string, req *dto.ImagePreuploadReq) (string, error) {
+func (i *image) Preupload(ctx context.Context, shopID string, req *dto.ImagePreuploadReq) (*dto.ImagePreuploadResponse, error) {
 	shopID = strings.TrimSpace(shopID)
 	filename := strings.TrimSpace(req.Filename)
 	contentType := strings.TrimSpace(req.ContentType)
 
 	if len(shopID) == 0 {
-		return "", errors.New("shop id is required")
+		return nil, errors.New("shop id is required")
 	}
 	if len(filename) == 0 {
-		return "", errors.New("filename is required")
+		return nil, errors.New("filename is required")
 	}
 	if len(contentType) == 0 {
-		return "", errors.New("content type is required")
+		return nil, errors.New("content type is required")
 	}
 
 	imageID := uuid.New().String()
 	fileKey := i.storageURLBuilder.BuildFileKey(shopID, imageID, filename)
 	uploadURL, err := i.storageProvider.GeneratePresignedUploadURL(ctx, fileKey, contentType, defaultPreuploadExpireDuration)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	bucket := i.storageProvider.Bucket()
@@ -45,8 +45,12 @@ func (i *image) Preupload(ctx context.Context, shopID string, req *dto.ImagePreu
 		FileKey:     fileKey,
 	}
 	if createErr := i.db.WithContext(ctx).Create(image).Error; createErr != nil {
-		return "", createErr
+		return nil, createErr
 	}
 
-	return uploadURL, nil
+	return &dto.ImagePreuploadResponse{
+		ImageID:   imageID,
+		UploadURL: uploadURL,
+		Method:    "PUT",
+	}, nil
 }

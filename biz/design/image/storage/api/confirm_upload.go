@@ -2,17 +2,17 @@ package api
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	imagesvc "github.com/leeseika/cv-demo/biz/design/image/storage/service"
-	"github.com/leeseika/cv-demo/pkg/model/dto"
 	jsonmodel "github.com/leeseika/cv-demo/pkg/model/json"
 )
 
-func Preupload(c *gin.Context) {
-	var req dto.ImagePreuploadReq
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+func ConfirmUpload(c *gin.Context) {
+	imageID := strings.TrimSpace(c.Param("id"))
+	if len(imageID) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "image id is required"})
 		return
 	}
 
@@ -22,13 +22,11 @@ func Preupload(c *gin.Context) {
 		return
 	}
 	authInfo := v.(*jsonmodel.AuthInfo)
-	shopID := authInfo.ShopID
 
-	preuploadResp, err := imagesvc.Get().Preupload(c, shopID, &req)
-	if err != nil {
+	if err := imagesvc.Get().ConfirmUpload(c, authInfo.ShopID, imageID); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, preuploadResp)
+	c.JSON(http.StatusOK, gin.H{"success": true})
 }

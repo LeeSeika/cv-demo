@@ -50,6 +50,7 @@ type (
 		DetectContentType(filename string, content []byte) string
 
 		Download(ctx context.Context, file io.Writer, fileKey string) error
+		ObjectExists(ctx context.Context, fileKey string) (bool, error)
 
 		GeneratePresignedUploadURL(ctx context.Context, fileKey string, contentType string, expireDuration time.Duration) (string, error)
 	}

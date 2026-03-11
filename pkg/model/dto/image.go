@@ -8,6 +8,12 @@ type ImagePreuploadReq struct {
 	ContentType string `json:"content_type" binding:"required"`
 }
 
+type ImagePreuploadResponse struct {
+	ImageID   string `json:"image_id"`
+	UploadURL string `json:"upload_url"`
+	Method    string `json:"method"`
+}
+
 type ImageResponse struct {
 	ID          string `json:"id"`
 	ShopID      string `json:"shop_id"`

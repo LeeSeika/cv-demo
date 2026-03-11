@@ -15,7 +15,8 @@ var _imageOnce sync.Once
 
 type (
 	Image interface {
-		Preupload(ctx context.Context, shopID string, req *dto.ImagePreuploadReq) (string, error)
+		Preupload(ctx context.Context, shopID string, req *dto.ImagePreuploadReq) (*dto.ImagePreuploadResponse, error)
+		ConfirmUpload(ctx context.Context, shopID string, imageID string) error
 		List(ctx context.Context, shopID string) ([]*object.Image, error)
 	}
 

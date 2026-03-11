@@ -25,6 +25,7 @@ func (i *image) List(ctx context.Context, shopID string) ([]*object.Image, error
 		Model(&object.Image{}).
 		Where("shop_id = ?", shopID).
 		Where("bucket = ?", i.storageProvider.Bucket()).
+		Where("is_uploaded = ?", true).
 		Order("created_at DESC").
 		Find(&images).Error
 	if err != nil {
