@@ -1,7 +1,7 @@
 # HELP
 # This will output the help for each task
 # thanks to https://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
-.PHONY: help build-int oauth2-demo-start oauth2-demo-stop oauth2-demo-status
+.PHONY: help build-int 2fa-start oauth2-demo-start oauth2-demo-stop oauth2-demo-status
 
 .DEFAULT_GOAL := help
 
@@ -15,6 +15,9 @@ help:
 
 build-int: ## build integration backend
 	go build -o int-bin integration/main.go
+
+2fa-start: ## start 2fa example server on :9100
+	go run ./biz/examples/2fa
 
 oauth2-demo-start: ## start oauth2 demo servers: auth-server, app-server, resource-server
 	@mkdir -p $(OAUTH2_DEMO_DIR)
