@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 
-	api "github.com/leeseika/cv-demo/biz/design/2fa/api"
-	accountsvc "github.com/leeseika/cv-demo/biz/design/2fa/service/account"
-	authsvc "github.com/leeseika/cv-demo/biz/design/2fa/service/auth"
+	api "github.com/leeseika/cv-demo/biz/examples/2fa/api"
+	accountsvc "github.com/leeseika/cv-demo/biz/examples/2fa/service/account"
+	authsvc "github.com/leeseika/cv-demo/biz/examples/2fa/service/auth"
 	"github.com/leeseika/cv-demo/pkg/config"
 	"github.com/leeseika/cv-demo/pkg/driver"
 	"github.com/leeseika/cv-demo/pkg/model/object"

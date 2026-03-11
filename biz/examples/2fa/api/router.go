@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	accountapi "github.com/leeseika/cv-demo/biz/design/2fa/api/account"
-	pageapi "github.com/leeseika/cv-demo/biz/design/2fa/api/page"
+	accountapi "github.com/leeseika/cv-demo/biz/examples/2fa/api/account"
+	pageapi "github.com/leeseika/cv-demo/biz/examples/2fa/api/page"
 )
 
 func (s *Server) addRoutes(engine *gin.Engine) {

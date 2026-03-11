@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	accountsvc "github.com/leeseika/cv-demo/biz/design/2fa/service/account"
+	accountsvc "github.com/leeseika/cv-demo/biz/examples/2fa/service/account"
 )
 
 type registerRequest struct {

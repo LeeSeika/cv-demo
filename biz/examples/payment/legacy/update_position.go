@@ -3,7 +3,7 @@ package legacy
 import (
 	"context"
 
-	legacyobject "github.com/leeseika/cv-demo/biz/design/payment/legacy/legacy-object"
+	legacyobject "github.com/leeseika/cv-demo/biz/examples/payment/legacy/legacy-object"
 	"gorm.io/gorm"
 )
 

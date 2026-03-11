@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	accountsvc "github.com/leeseika/cv-demo/biz/design/2fa/service/account"
-	authsvc "github.com/leeseika/cv-demo/biz/design/2fa/service/auth"
+	accountsvc "github.com/leeseika/cv-demo/biz/examples/2fa/service/account"
+	authsvc "github.com/leeseika/cv-demo/biz/examples/2fa/service/auth"
 	"github.com/leeseika/cv-demo/pkg/constants"
 )
 
