@@ -66,9 +66,10 @@
 
 #### 其他项目
 
-1. 事件追踪平台（Analytics-API）
-   - 移植 Rust 开源项目 `zowens/commitlog`，基于 B-Tree、mmap 实现连续的、基于磁盘的二进制追加日志。
-2. 搭建 CI/CD Pipeline、可观测平台
+1. [Commitlog](/pkg/commitlog/)
+   - 移植 Rust 开源项目 [zowens/commitlog](https://github.com/zowens/commitlog)，基于 B-Tree、mmap 实现连续的、基于磁盘的二进制追加日志。
+   - 基于 commitlog 实现 WAL，作为高频写入场景的异步缓冲。
+2. 搭建 CI/CD Pipeline
    - 基于 k3S、GitLab Runner、ArgoCD 搭建符合 GitOps 理念的 CI/CD 流水线。
 
 ## 2. 关键业务链路介绍
