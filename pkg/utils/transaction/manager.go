@@ -15,7 +15,7 @@ type TxHandler struct {
 }
 
 // NewHandler Creating a Transaction Processor
-func NewHandler(ctx context.Context) *TxHandler {
+func NewHandler() *TxHandler {
 	db := driver.GetDB()
 	return &TxHandler{
 		db: db,

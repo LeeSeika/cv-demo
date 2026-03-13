@@ -14,4 +14,6 @@ type Shop struct {
 	CreatedAt    time.Time `gorm:"index"`
 	UpdatedAt    time.Time
 	DeletedAt    gorm.DeletedAt `gorm:"index"`
+	// references
+	AssignedAccountID string `gorm:"size:128;index"`
 }
