@@ -3,8 +3,8 @@ package template
 import (
 	"fmt"
 
-	"github.com/leeseika/cv-demo/pkg/jsonx"
 	"github.com/leeseika/cv-demo/pkg/page/material/component/element"
+	"github.com/leeseika/cv-demo/pkg/utils/jsonx"
 )
 
 type (

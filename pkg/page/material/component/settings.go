@@ -1,8 +1,8 @@
 package component
 
 import (
-	"github.com/leeseika/cv-demo/pkg/jsonx"
 	"github.com/leeseika/cv-demo/pkg/page/material/component/blocks"
+	"github.com/leeseika/cv-demo/pkg/utils/jsonx"
 )
 
 type Settings struct {

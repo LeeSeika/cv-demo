@@ -1,9 +1,9 @@
 package preprocessor
 
 import (
-	"github.com/leeseika/cv-demo/pkg/jsonx"
 	"github.com/leeseika/cv-demo/pkg/page/material/component/element"
 	"github.com/leeseika/cv-demo/pkg/page/material/template"
+	"github.com/leeseika/cv-demo/pkg/utils/jsonx"
 )
 
 type Sanitizer interface {

@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/leeseika/cv-demo/pkg/jsonx"
+	"github.com/leeseika/cv-demo/pkg/utils/jsonx"
 )
 
 //go:embed input.json

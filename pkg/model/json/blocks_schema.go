@@ -1,8 +1,8 @@
 package json
 
 import (
-	"github.com/leeseika/cv-demo/pkg/jsonx"
 	"github.com/leeseika/cv-demo/pkg/page/material/component/element/field"
+	"github.com/leeseika/cv-demo/pkg/utils/jsonx"
 )
 
 type BlocksSchema struct {

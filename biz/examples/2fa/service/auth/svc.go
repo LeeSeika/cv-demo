@@ -1,9 +1,3 @@
-/*
-Copyright: 2024, Deep Codify Limited
-
-Enterprise Merchant Console
-*/
-
 package auth
 
 import (

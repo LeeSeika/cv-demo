@@ -17,7 +17,7 @@ import (
 
 	"cloud.google.com/go/storage"
 	"github.com/leeseika/cv-demo/pkg/config"
-	"github.com/leeseika/cv-demo/pkg/threading"
+	"github.com/leeseika/cv-demo/pkg/utils/threading"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 )

@@ -84,6 +84,10 @@ func TestPreprocessProductPage(t *testing.T) {
 			if err != nil {
 				t.Fatalf("failed to handle product description component schema: %v", err)
 			}
+
+			// log
+			log(t, tt, productTitleComponentSchema, productDescriptionComponentSchema)
+
 			// prepare component schema provider
 			schemaMap := map[string]component.Schema{
 				"product_title":       *productTitleComponentSchema,
@@ -91,23 +95,9 @@ func TestPreprocessProductPage(t *testing.T) {
 			}
 			componentSchemaProvider := componentschema.NewInMemorySchemaProvider(schemaMap)
 
-			parsedProductTitleSchema, _ := json.Marshal(productTitleComponentSchema)
-			parsedProductDescriptionSchema, _ := json.Marshal(productDescriptionComponentSchema)
-
-			t.Logf("preprocessed component schema %s with locale %v: %v",
-				productTitleComponentSchema.Name,
-				tt.locale,
-				string(parsedProductTitleSchema),
-			)
-			t.Logf("preprocessed component schema %s with locale %v: %v",
-				productDescriptionComponentSchema.Name,
-				tt.locale,
-				string(parsedProductDescriptionSchema),
-			)
-
 			// preprocess product page template
 			// parse and validate JSON template
-			_, err = PreprocessJSONTemplate(
+			jsonTpl, err := PreprocessJSONTemplate(
 				productPageTemplateRaw,
 				componentSchemaProvider,
 				NewElementValueSanitizer(bluemonday.UGCPolicy()),
@@ -116,7 +106,27 @@ func TestPreprocessProductPage(t *testing.T) {
 				t.Fatalf("failed to handle product page template: %v", err)
 			}
 
-			// t.Logf("preprocessed product page template with locale %v: %+v", tt.locale, jsonTpl)
+			t.Logf("preprocessed product page template with locale %v: %+v", tt.locale, jsonTpl)
 		})
 	}
+}
+
+func log(t *testing.T, tt struct {
+	name           string
+	locale         string
+	localeProvider locale.LocaleProvider
+}, productTitleComponentSchema, productDescriptionComponentSchema *component.Schema) {
+	parsedProductTitleSchema, _ := json.Marshal(productTitleComponentSchema)
+	parsedProductDescriptionSchema, _ := json.Marshal(productDescriptionComponentSchema)
+
+	t.Logf("preprocessed component schema %s with locale %v: %v",
+		productTitleComponentSchema.Name,
+		tt.locale,
+		string(parsedProductTitleSchema),
+	)
+	t.Logf("preprocessed component schema %s with locale %v: %v",
+		productDescriptionComponentSchema.Name,
+		tt.locale,
+		string(parsedProductDescriptionSchema),
+	)
 }

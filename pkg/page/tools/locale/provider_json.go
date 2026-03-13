@@ -3,7 +3,7 @@ package locale
 import (
 	"encoding/json"
 
-	"github.com/leeseika/cv-demo/pkg/jsonx"
+	"github.com/leeseika/cv-demo/pkg/utils/jsonx"
 )
 
 type JSONProvider struct {

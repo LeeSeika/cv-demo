@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/leeseika/cv-demo/pkg/jsonx"
 	"github.com/leeseika/cv-demo/pkg/page/material/component"
 	"github.com/leeseika/cv-demo/pkg/page/material/component/blocks"
 	componentschema "github.com/leeseika/cv-demo/pkg/page/tools/component-schema"
+	"github.com/leeseika/cv-demo/pkg/utils/jsonx"
 )
 
 type JSONTemplate struct {

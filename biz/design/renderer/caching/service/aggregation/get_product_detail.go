@@ -10,9 +10,9 @@ import (
 	referenceSvc "github.com/leeseika/cv-demo/biz/design/renderer/caching/service/reference"
 	shopSvc "github.com/leeseika/cv-demo/biz/design/renderer/caching/service/shop"
 	kvcache "github.com/leeseika/cv-demo/pkg/driver/kv-cache"
-	"github.com/leeseika/cv-demo/pkg/errs"
 	"github.com/leeseika/cv-demo/pkg/model/cache"
 	"github.com/leeseika/cv-demo/pkg/model/dto"
+	"github.com/leeseika/cv-demo/pkg/utils/errs"
 	"github.com/rs/zerolog/log"
 )
 

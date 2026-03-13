@@ -3,8 +3,8 @@ package field
 import (
 	"strings"
 
-	"github.com/leeseika/cv-demo/pkg/jsonx"
 	"github.com/leeseika/cv-demo/pkg/page/tools/locale"
+	"github.com/leeseika/cv-demo/pkg/utils/jsonx"
 )
 
 type TranslatableField struct {

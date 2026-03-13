@@ -9,7 +9,7 @@ import (
 	"github.com/leeseika/cv-demo/pkg/constants"
 	"github.com/leeseika/cv-demo/pkg/driver/pubsub"
 	"github.com/leeseika/cv-demo/pkg/model/dto"
-	"github.com/leeseika/cv-demo/pkg/threading"
+	"github.com/leeseika/cv-demo/pkg/utils/threading"
 	"github.com/rs/zerolog/log"
 )
 

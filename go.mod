@@ -10,6 +10,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/credentials v1.17.67
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.96.2
 	github.com/bradfitz/gomemcache v0.0.0-20250403215159-8d39553ac7cf
+	github.com/cockroachdb/cockroach-go/v2 v2.4.3
 	github.com/dgraph-io/badger/v4 v4.9.1
 	github.com/gin-gonic/gin v1.11.0
 	github.com/go-oauth2/oauth2/v4 v4.5.4
@@ -26,7 +27,6 @@ require (
 	github.com/johannesboyne/gofakes3 v0.0.0-20260208201424-4c385a1f6a73
 	github.com/lib/pq v1.10.9
 	github.com/minio/minio-go/v7 v7.0.98
-	github.com/nats-io/nats.go v1.49.0
 	github.com/pascaldekloe/jwt v1.12.0
 	github.com/pkg/xattr v0.4.12
 	github.com/redis/go-redis/v9 v9.17.2
@@ -40,7 +40,7 @@ require (
 	google.golang.org/grpc v1.79.1
 	google.golang.org/protobuf v1.36.11
 	gorm.io/datatypes v1.2.7
-	gorm.io/driver/postgres v1.5.0
+	gorm.io/driver/postgres v1.5.11
 )
 
 require (
@@ -101,9 +101,9 @@ require (
 	github.com/jackc/pgio v1.0.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgproto3/v2 v2.3.3 // indirect
-	github.com/jackc/pgservicefile v0.0.0-20231201235250-de7065d80cb9 // indirect
-	github.com/jackc/pgx/v5 v5.5.5 // indirect
-	github.com/jackc/puddle/v2 v2.2.1 // indirect
+	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
+	github.com/jackc/pgx/v5 v5.7.2 // indirect
+	github.com/jackc/puddle/v2 v2.2.2 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/compress v1.18.2 // indirect
 	github.com/klauspost/cpuid/v2 v2.3.0 // indirect
@@ -113,8 +113,6 @@ require (
 	github.com/minio/md5-simd v1.1.2 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421 // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
-	github.com/nats-io/nkeys v0.4.12 // indirect
-	github.com/nats-io/nuid v1.0.1 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.4 // indirect
 	github.com/philhofer/fwd v1.2.0 // indirect
 	github.com/planetscale/vtprotobuf v0.6.1-0.20240319094008-0393e58bdf10 // indirect

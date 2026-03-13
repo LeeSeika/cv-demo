@@ -1,6 +1,6 @@
 package blocks
 
-import "github.com/leeseika/cv-demo/pkg/jsonx"
+import "github.com/leeseika/cv-demo/pkg/utils/jsonx"
 
 type Settings struct {
 	Type            string                     `json:"type"`

@@ -1,9 +1,3 @@
-/*
-Copyright: 2023, Deep Codify Limited
-
-auth-api server
-*/
-
 package oauth2
 
 import (

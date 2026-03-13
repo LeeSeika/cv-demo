@@ -3,8 +3,8 @@ package object
 import (
 	"time"
 
-	"github.com/leeseika/cv-demo/pkg/datatype"
 	jsonmodel "github.com/leeseika/cv-demo/pkg/model/json"
+	"github.com/leeseika/cv-demo/pkg/utils/datatype"
 )
 
 type ProductVariant struct {

@@ -6,8 +6,8 @@ import (
 
 	"github.com/dgraph-io/badger/v4"
 	kvcache "github.com/leeseika/cv-demo/pkg/driver/kv-cache"
-	"github.com/leeseika/cv-demo/pkg/errs"
 	"github.com/leeseika/cv-demo/pkg/model/cache"
+	"github.com/leeseika/cv-demo/pkg/utils/errs"
 	"github.com/rs/zerolog/log"
 	"gorm.io/gorm"
 )

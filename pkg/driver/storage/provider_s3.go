@@ -20,7 +20,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/aws-sdk-go-v2/service/s3/types"
 	"github.com/leeseika/cv-demo/pkg/config"
-	"github.com/leeseika/cv-demo/pkg/threading"
+	"github.com/leeseika/cv-demo/pkg/utils/threading"
 )
 
 /**

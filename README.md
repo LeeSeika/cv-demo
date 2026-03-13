@@ -15,7 +15,7 @@
 
 1. 实现页面构建的全流程：
    ① [实现组件、页面模板等原始 JSON 数据的预处理](/biz/design/preprocessor/)，包括结构化、有效性和安全性校验，并通过延迟解析、责任链模式优化处理逻辑。
-   ② 实现服务端渲染，包括从 liquid 页面模板到 HTML 的渲染流程，以及业务数据的初步注入。
+   ② [实现服务端渲染，包括从 liquid 页面模板到 HTML 的渲染流程，以及业务数据的初步注入](/biz/design/renderer/rendering/)。
 2. 实现 Page Admin：
    ① [实现 editor](/biz/design/renderer/editor/)，使用 Redis 实现页面草稿的实时预览，并基于乐观锁思想避免多人保存草稿时发生并发覆盖。  
    ② 根据页面草稿写多读少、无模式的特点选择 Badger 作为持久化存储，并订阅 Redis KeySpace 通知，实现 Write Back 形式的草稿缓存落盘策略。
