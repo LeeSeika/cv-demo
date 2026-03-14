@@ -87,27 +87,51 @@ UI 的右上角有一个 Save 按钮，只有点击该按钮时，页面草稿�
 所以，基本可以认为每当用户对 JSON 数据进行一次编辑，最终都会触发一次缓存落盘，草稿写磁盘的频率是非常高的。
 
 ```mermaid
-flowchart LR
-  A[用户在 Editor 中修改页面草稿] --> B[前端发送更新草稿请求]
-  B --> C[Editor API 接收最新 JSON]
-  C --> D[更新 Redis Cache 中的 JSON 数据]
-  D --> E[Redis 产生 SET Keyspace Notification]
-  E --> F[订阅者监听到草稿变更事件]
-  F --> G[拉取最新草稿 JSON]
-  G --> H[持久化到磁盘]
+sequenceDiagram
+	autonumber
+	participant User as 用户
+	participant Browser as 浏览器
+	participant API as Editor API
+	participant Redis as Redis Cache
+	participant Subscriber as Redis Subscriber
+	participant Badger as Badger
+
+	User->>Browser: 修改页面草稿
+	Browser->>API: 发送更新草稿请求<br/>携带最新 JSON
+	API->>Redis: 更新草稿 JSON
+	Redis-->>API: 更新成功
+	Redis-->>Subscriber: Keyspace Notification（SET 事件）
+	Subscriber->>Redis: 拉取最新草稿 JSON
+	Redis-->>Subscriber: 返回最新草稿 JSON
+	Subscriber->>Badger: 持久化到磁盘
 ```
 
 而对于草稿数据的读操作，只有在 Redis 缓存过期时，才会触发一次从磁盘中读取草稿的动作，在缓存过期前，草稿所有读请求都在缓存层完成，草稿读磁盘的频率是非常低的。
 
 ```mermaid
-flowchart LR
-  A[前端发送获取草稿请求] --> B[Editor API 接收读请求]
-  B --> C[查询 Redis Cache 中的草稿 JSON]
-  C --> D{是否命中缓存}
-  D -- 是 --> E[直接返回 Redis 中的 JSON 数据]
-  D -- 否 --> F[从 Badger 读取草稿 JSON]
-  F --> G[将 JSON 数据回填到 Redis Cache]
-  G --> H[返回最新 JSON 数据给前端]
+sequenceDiagram
+	autonumber
+	participant User as 用户
+	participant Browser as 浏览器
+	participant API as Editor API
+	participant Redis as Redis Cache
+	participant Badger as Badger
+
+	User->>Browser: 请求获取页面草稿
+	Browser->>API: 发送获取草稿请求
+	API->>Redis: 查询草稿 JSON
+
+	alt 命中 Redis 缓存
+		Redis-->>API: 返回草稿 JSON
+		API-->>Browser: 返回最新 JSON 数据
+	else Redis 缓存未命中
+		Redis-->>API: 返回空结果
+		API->>Badger: 读取草稿 JSON
+		Badger-->>API: 返回草稿 JSON
+		API->>Redis: 回填草稿 JSON 到缓存
+		Redis-->>API: 回填成功
+		API-->>Browser: 返回最新 JSON 数据
+	end
 ```
 
 我们预估草稿 JSON 数据的读写磁盘比例约为 1：99
@@ -207,9 +231,9 @@ Badger 也不是完全没有代价，它并不擅长复杂查询，只适合当�
 - 当单次事务写入过大时，处理 `badger.ErrTxnTooBig`，拆分成多个事务提交。
 
 ```mermaid
-flowchart LR
+flowchart TD
 	A[Redis Keyspace Notification] --> B[订阅者将 key 放入 buffer]
-	B --> C{达到 batchSize\n或 flushInterval 超时}
+	B --> C{达到 batchSize<br/>或 flushInterval 超时}
 	C -- 否 --> B
 	C -- 是 --> D[批量从 Redis 拉取最新草稿 JSON]
 	D --> E[开始 Badger 写事务]
