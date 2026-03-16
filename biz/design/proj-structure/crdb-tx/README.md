@@ -4,6 +4,8 @@
 
 CockroachDB 的处理方式具体见[官方文档](https://www.cockroachlabs.com/docs/stable/demo-serializable)
 
+![crdb_tx](/assets/crdb-tx/crdb_tx.png)
+
 简单地说，CockroachDB 提供了一个`crdbgorm`库，用于检测 gorm 抛出的事务 error 是否是 `SQLSTATE 40001` 错误。如果是，则在客户端侧做事务重试。`crdbgorm` 源代码片段如下：
 
 ```go

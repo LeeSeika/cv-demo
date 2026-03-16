@@ -45,7 +45,7 @@
 4. 授权与登录：  
    ① [实现 OAuth 2.0，结合业务对 go-oauth2 库进行扩展，允许第三方 APP 授权访问店铺资源](/biz/design/oauth2/)。  
    ② [实现 TOTP 形式的 2FA 登录](/biz/examples/2fa/)。
-5. Bugfix 与优化：  
+5. [Bugfix](/bugfix/) 与优化：  
    ① 重构遗留的 N+1 数据库查询逻辑，优化为 $O(1)$ 时间复杂度查询。  
    ② [查阅 CockroachDB 对事务隔离性的实现方案，重新设计事务抛错方式，避免事务意外回滚](/biz/design/proj-structure/crdb-tx/)。  
    ③ [重构项目结构，定义各层职责，解决代码耦合和复用率低的问题](/biz/design/proj-structure/layer/)。
@@ -69,7 +69,7 @@
 
 1. [Commitlog](/pkg/commitlog/)
    - 移植 Rust 开源项目 [zowens/commitlog](https://github.com/zowens/commitlog)，基于 B-Tree、mmap 实现连续的、基于磁盘的二进制追加日志。
-   - 基于 commitlog 实现 WAL，作为高频写入场景的异步缓冲。
+   - [把 commitlog 用作 WAL，配合边车模式实现高频写入场景（埋点上报）的异步写入缓冲](/biz/design/event-tracking/)。
 2. 搭建 CI/CD Pipeline
    - 基于 k3S、GitLab Runner、ArgoCD 搭建符合 GitOps 理念的 CI/CD 流水线。
 
@@ -299,5 +299,3 @@ sequenceDiagram
 ```
 
 ### 2.4. Cache Aside
-
-## 3. 简历中未提及的工作内容与 demo 位置的索引
