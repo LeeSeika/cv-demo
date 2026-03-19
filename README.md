@@ -35,7 +35,7 @@
 
 1. 商品管理：  
    ① 定义“商品”“商品变体”“商品目录”等模型之间的关系，实现业务逻辑。  
-   ② [使用 `OnConflict` 子句重构原 `REPLACE INTO` 实现的 Upsert 逻辑，优化批量创建和更新业务](/biz/examples/batch-upsert/)。
+   ② 使用 `OnConflict` 子句重构原 `REPLACE INTO` 实现的 Upsert 逻辑，优化批量创建和更新业务
 2. [支付管理](/biz/examples/payment/)：  
    ① 重构支付管理业务，将编排关系从“支付方式”模型中独立出来，抽象成新的“支付规则”模型来描述这些关系，实现数据模型与计算模型解耦。  
    ② [通过部分唯一索引约束特定支付规则的唯一性](/pkg/model/object/payment_rule.go)。

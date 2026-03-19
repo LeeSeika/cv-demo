@@ -167,3 +167,76 @@ flowchart TD
 - 并发：当前实现未做并发控制；多 goroutine 并发读写需要调用方自行加锁或串行化。
 - segment 大小：index entry 的 `filePos` 是 `u32`，因此单个 segment 的可寻址位置理论上受 4GiB 限制；建议将 `logMaxBytes` 配置在 4GiB 以内。
 - durability：`Flush()` 才会显式调用 `Sync/Flush`，是否每次 append 都立即落盘取决于 OS 缓存策略。
+
+## Benchmark
+
+`pkg/commitlog` 提供了一组面向“写盘路径”的 benchmark，入口在 `log_benchmark_test.go`。
+
+测试目标：
+
+- 测量消息追加到 segment/index 后再 `Flush()` 的完整耗时
+- 区分“单条追加写盘”和“批量追加写盘”
+- 让 benchmark 覆盖真实落盘路径，而不是只测内存组包
+
+当前包含两类子基准：
+
+- `append_msg_flush`
+  - `256b`
+  - `4kb`
+  - 含义：每轮执行一次 `AppendMsg(payload)`，然后立刻 `Flush()`
+- `append_batch_flush`
+  - `20x256b`
+  - `20x4kb`
+  - 含义：每轮执行一次 `Append(buf)`，其中 `buf` 预先包含 `20` 条消息，然后立刻 `Flush()`
+
+设计说明：
+
+- `Flush()` 在计时范围内，因此结果反映的是“写入 + 刷盘”而不是“只写进进程缓存”
+- 批量 benchmark 会预先构造 `MessageBuf`，避免把调用方组包成本过多计入 `Append(buf)` 的结果
+- benchmark 内部关闭了 `commitlog` 的日志输出，减少日志 IO 对结果的干扰
+
+运行方式：
+
+```bash
+go test ./pkg/commitlog -run '^$' -bench BenchmarkCommitLog_WriteDisk -benchmem
+```
+
+如果只想快速验证 benchmark 是否可运行，可以先跑一轮 smoke test：
+
+```bash
+go test ./pkg/commitlog -run '^$' -bench BenchmarkCommitLog_WriteDisk -benchtime=1x -benchmem
+```
+
+一次 `-benchtime=1x` 的本地 smoke 结果（`darwin/arm64`, `Apple M2`）：
+
+| 子基准 | ns/op | 吞吐 |
+| --- | ---: | ---: |
+| `append_msg_flush/256b` | 6295167 | 0.04 MB/s |
+| `append_msg_flush/4kb` | 6012542 | 0.68 MB/s |
+| `append_batch_flush/20x256b` | 5594500 | 0.92 MB/s |
+| `append_batch_flush/20x4kb` | 5542792 | 14.78 MB/s |
+
+这组数据主要用于确认 benchmark 路径可运行，不适合作为最终性能结论；要看更稳定的结果，应直接运行默认 `-bench` 命令，让 Go benchmark 框架自动放大 `b.N`。
+
+一组更适合分析的本地结果（`darwin/arm64`, `Apple M2`, `-benchtime=5s -count=3`）：
+
+```bash
+go test ./pkg/commitlog -run '^$' -bench BenchmarkCommitLog_WriteDisk -benchmem -benchtime=5s -count=3
+```
+
+按三次结果取均值：
+
+| 子基准 | 平均 ns/op | 平均吞吐 |
+| --- | ---: | ---: |
+| `append_msg_flush/256b` | 4040281 | 0.06 MB/s |
+| `append_msg_flush/4kb` | 4260291 | 0.97 MB/s |
+| `append_batch_flush/20x256b` | 4605935 | 1.11 MB/s |
+| `append_batch_flush/20x4kb` | 4880097 | 16.80 MB/s |
+
+可以得出的结论：
+
+- 单条写盘时，`Flush()` 的固定成本非常明显；`256b` 和 `4kb` 的单次耗时处在同一个毫秒级区间
+- 把 `Flush()` 摊到 `20` 条消息上后，批量写入的吞吐明显更高
+- 对小消息来说，`append_batch_flush/20x256b` 相比 `append_msg_flush/256b` 的吞吐约提升 `17.7x`
+- 对 `4kb` 消息来说，`append_batch_flush/20x4kb` 相比 `append_msg_flush/4kb` 的吞吐约提升 `17.3x`
+- 从这组结果看，当前写盘瓶颈更像是“每次 flush 的固定成本”，而不是消息序列化本身
